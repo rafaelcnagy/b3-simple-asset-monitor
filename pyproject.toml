@@ -7,6 +7,11 @@ authors = ["Rafael Correa Nagy <rafaelcnagy@hotmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 Django = "^4.0.2"
+parsel = "^1.6.0"
+aiohttp = "^3.8.1"
+asyncio = "^3.4.3"
+celery = "^5.2.3"
+python-decouple = "^3.6"
 
 [tool.poetry.dev-dependencies]
 
