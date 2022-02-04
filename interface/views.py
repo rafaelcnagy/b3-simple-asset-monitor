@@ -13,7 +13,17 @@ def view_list(request):
 
 @login_required
 def update(request, id):
-    return render("update")
+    asset_monitoring = AssetMonitoring.objects.get(id=id)        
+    if request.method == 'POST':
+        upper_limit = request.POST.get('upper_limit', None)
+        lower_limit = request.POST.get('lower_limit', None)
+        asset_monitoring.upper_limit = float(upper_limit.replace(',', '.'))
+        asset_monitoring.lower_limit = float(lower_limit.replace(',', '.'))
+        asset_monitoring.save()
+        request.session['form_message'] = "Ativo atualizado com sucesso!"
+        return redirect('view_list')
+    else:
+        return render(request, "interface/update.html", {'asset': asset_monitoring})
 
 @login_required
 def register(request):
