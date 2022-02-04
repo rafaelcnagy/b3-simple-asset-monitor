@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="hero-body">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+          <form method="post" class="box">
+            {% csrf_token %}
+            <div class="field">
+            <label for="" class="label">Usuário</label>
+            <div class="control has-icons-left">
+              {{ form.username }}
+              <span class="icon is-small is-left">
+                <i class="fa fa-envelope"></i>
+              </span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="" class="label">Senha</label>
+            <div class="control has-icons-left">
+              {{ form.password }}
+              <span class="icon is-small is-left">
+                <i class="fa fa-lock"></i>
+              </span>
+            </div>
+          </div>
+          <div class="field">
+            <button class="button is-dark">
+              Login
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} 
