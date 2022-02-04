@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load humanize %}
 {% block title %}Lista de ações{% endblock %}
 
 {% block content %}
@@ -17,8 +17,27 @@
 
     <div class="assets-list">
     {% for asset in assets %}
-        <div class="button ">
-            <a href="{% url 'update' id=asset.id %}"> {{store.name}} </a>
+        <div class="box m-3 p-5">
+            <div class="columns content">
+                <div class="column is-one-quarter">
+                    <h2>{{asset.asset.code}}</h2>
+                </div>
+                <div class="column">
+                    <h3>{{asset.asset.name}}</h2>
+                </div>
+                <div class="column">
+                    {% if asset.upper_limit %}
+                        <p>Limite superior: R$ {{asset.upper_limit|floatformat:2|intcomma}}</p>
+                    {% endif %}
+                    {% if asset.lower_limit %}
+                        <p>Limite inferior: R$ {{asset.lower_limit|floatformat:2|intcomma}}</p>
+                    {% endif %}
+                </div>
+                <div class="column">
+                    <a class="button" href="{% url 'update' id=asset.id %}">Editar</a>
+                </div>
+            </div>
+            </a>
         </div>
     {% endfor %}
     </div>

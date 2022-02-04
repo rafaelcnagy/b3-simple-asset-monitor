@@ -8,7 +8,7 @@ from django.contrib import messages
 @login_required
 def view_list(request):
     user = request.user
-    assets = AssetMonitoring.objects.filter(user=user)
+    assets = AssetMonitoring.objects.filter(user=user).order_by('-created_at')
     return render(request, 'interface/view_list.html', {'assets': assets})
 
 @login_required
