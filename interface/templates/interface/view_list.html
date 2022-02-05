@@ -19,11 +19,22 @@
     {% for asset in assets %}
         <div class="box m-3 p-5">
             <div class="columns content">
-                <div class="column is-one-quarter">
-                    <h2>{{asset.asset.code}}</h2>
+                <div class="column is-half">
+                    <div class="columns">
+                        <div class="column">
+                            <h2>{{asset.asset.code}}</h2>
+                        </div>
+                        <div class="column">
+                            <h3>{{asset.asset.name}}</h3>
+                        </div>
+                    </div>
+                    {% if asset.asset.company_name %}
+                    <p class="subtitle">{{asset.asset.company_name}}</p>
+                    {% endif %}
                 </div>
+                
                 <div class="column">
-                    <h3>{{asset.asset.name}}</h2>
+                    <h3>Valor atual:<br>R$ {{asset.prices.0.price}}</h2>
                 </div>
                 <div class="column">
                     {% if asset.upper_limit %}
@@ -33,7 +44,7 @@
                         <p>Limite inferior: R$ {{asset.lower_limit|floatformat:2|intcomma}}</p>
                     {% endif %}
                 </div>
-                <div class="column">
+                <div class="column is-1">
                     <a class="button" href="{% url 'update' id=asset.id %}">Editar</a>
                 </div>
             </div>

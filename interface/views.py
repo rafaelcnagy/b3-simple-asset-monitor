@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from .models import AssetMonitoring
-from monitoring.models import Asset
+from monitoring.models import Asset, AssetPrice
 from .form import AssetMonitoringForm
 from django.contrib import messages
 
@@ -9,11 +9,17 @@ from django.contrib import messages
 def view_list(request):
     user = request.user
     assets = AssetMonitoring.objects.filter(user=user).order_by('-created_at')
+    assets_prices = AssetPrice.objects.filter(asset__in=[asset_monitoring.asset for asset_monitoring in assets]).order_by('-created_at')
+    for asset in assets:
+        asset.prices = [asset_price for asset_price in assets_prices if asset_price.asset == asset.asset]
+
     return render(request, 'interface/view_list.html', {'assets': assets})
 
 @login_required
 def update(request, id):
-    asset_monitoring = AssetMonitoring.objects.get(id=id)        
+    asset_monitoring = AssetMonitoring.objects.get(id=id)
+    asset_monitoring.prices = AssetPrice.objects.filter(asset=asset_monitoring.asset).order_by('-created_at')
+
     if request.method == 'POST':
         upper_limit = request.POST.get('upper_limit', None)
         lower_limit = request.POST.get('lower_limit', None)
