@@ -17,19 +17,36 @@ def view_list(request):
 
 @login_required
 def update(request, id):
+    def check_interval(upper_limit, lower_limit, price):
+        if upper_limit is not None and upper_limit != '':
+            asset_monitoring.upper_limit = float(upper_limit.replace(',', '.'))
+            if asset_monitoring.upper_limit < price or asset_monitoring.upper_limit <= 0:
+                return False
+        else:
+            asset_monitoring.upper_limit = None
+
+        if lower_limit is not None and lower_limit != '':
+            asset_monitoring.lower_limit = float(lower_limit.replace(',', '.'))
+            if asset_monitoring.lower_limit > price or asset_monitoring.lower_limit <= 0:
+                return False
+        else:
+            asset_monitoring.lower_limit = None
+        
+        return True
+
     asset_monitoring = AssetMonitoring.objects.get(id=id)
     asset_monitoring.prices = AssetPrice.objects.filter(asset=asset_monitoring.asset).order_by('-created_at')
 
     if request.method == 'POST':
         upper_limit = request.POST.get('upper_limit', None)
         lower_limit = request.POST.get('lower_limit', None)
-        asset_monitoring.upper_limit = float(upper_limit.replace(',', '.'))
-        asset_monitoring.lower_limit = float(lower_limit.replace(',', '.'))
-        asset_monitoring.save()
-        request.session['form_message'] = "Ativo atualizado com sucesso!"
-        return redirect('view_list')
-    else:
-        return render(request, "interface/update.html", {'asset': asset_monitoring})
+        if check_interval(upper_limit, lower_limit, asset_monitoring.prices[0].price):
+            asset_monitoring.save()
+            request.session['form_message'] = "Ativo atualizado com sucesso!"
+            return redirect('view_list')
+        else:
+            messages.error(request, 'Valor inválido')
+    return render(request, "interface/update.html", {'asset': asset_monitoring})
 
 @login_required
 def register(request):
@@ -46,6 +63,7 @@ def register(request):
                 messages.error(request, form_error)
     else:
         form = AssetMonitoringForm()
-    
+
     return render(request, 'interface/register.html', {'form': form})
 
+    

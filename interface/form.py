@@ -2,7 +2,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import AssetMonitoring
-from monitoring.models import Asset
+from monitoring.models import Asset, AssetPrice
 
 class AssetMonitoringForm (forms.ModelForm):
     code = forms.ChoiceField()
@@ -19,9 +19,16 @@ class AssetMonitoringForm (forms.ModelForm):
 
     def clean(self):
         super(AssetMonitoringForm, self).clean()
-        asset = AssetMonitoring.objects.filter(user=self.user, asset=Asset.objects.get(id=self.data['code']))
-        if len(asset) > 0:
+        asset = Asset.objects.get(id=self.data['code'])
+        asset_monitoring = AssetMonitoring.objects.filter(user=self.user, asset=asset)
+        price = AssetPrice.objects.filter(asset=asset).order_by('-created_at').first()
+
+        if len(asset_monitoring) > 0:
             raise ValidationError(f'Você já tem esse ativo cadastrado.')
+        if self.fields['upper_limit'] and self.fields['upper_limit'] <= price:
+            raise ValidationError(f'O limite inferior não pode ser maior que o limite superior.')
+        if self.fields['lower_limit'] and self.fields['lower_limit'] >= price:
+            raise ValidationError(f'Os limites inferior e superior não podem ser iguais.')
 
     def save(self):
         asset_monitoring = super(AssetMonitoringForm, self).save(commit=False)
