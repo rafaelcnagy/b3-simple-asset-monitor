@@ -16,3 +16,10 @@ class Asset(models.Model):
     market_cap = models.FloatField(null=True)
     updated_at = models.DateTimeField(default=None, null=True)
     created_at = models.DateTimeField(default=timezone.now)
+
+class AssetPrice(models.Model):
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    price = models.FloatField()
+    change_percent = models.FloatField()
+    currency = models.CharField(max_length=30)
+    created_at = models.DateTimeField(default=timezone.now)

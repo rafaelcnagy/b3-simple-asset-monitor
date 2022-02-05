@@ -12,6 +12,7 @@ aiohttp = "^3.8.1"
 asyncio = "^3.4.3"
 celery = "^5.2.3"
 python-decouple = "^3.6"
+APScheduler = "^3.8.1"
 
 [tool.poetry.dev-dependencies]
 
