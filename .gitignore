@@ -1,5 +1,7 @@
 poetry.lock
 .vscode
+/static/
+migrations/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
