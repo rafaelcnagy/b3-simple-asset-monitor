@@ -21,14 +21,14 @@ class AssetMonitoringForm (forms.ModelForm):
         super(AssetMonitoringForm, self).clean()
         asset = Asset.objects.get(id=self.data['code'])
         asset_monitoring = AssetMonitoring.objects.filter(user=self.user, asset=asset)
-        price = AssetPrice.objects.filter(asset=asset).order_by('-created_at').first()
+        price_obj = AssetPrice.objects.filter(asset=asset).order_by('-created_at').first()
 
         if len(asset_monitoring) > 0:
             raise ValidationError(f'Você já tem esse ativo cadastrado.')
-        if self.fields['upper_limit'] and self.fields['upper_limit'] <= price:
-            raise ValidationError(f'O limite inferior não pode ser maior que o limite superior.')
-        if self.fields['lower_limit'] and self.fields['lower_limit'] >= price:
-            raise ValidationError(f'Os limites inferior e superior não podem ser iguais.')
+        if self.data['upper_limit'] and float(self.data['upper_limit'].replace(',', '.')) <= price_obj.price:
+            raise ValidationError(f'O limite superior não pode ser menor que o valor atual do ativo.')
+        if self.data['lower_limit'] and float(self.data['lower_limit'].replace(',', '.')) >= price_obj.price:
+            raise ValidationError(f'Os limite inferior não pode ser maior que o valor atual do ativo.')
 
     def save(self):
         asset_monitoring = super(AssetMonitoringForm, self).save(commit=False)
