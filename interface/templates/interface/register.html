@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container is-fluid">
-    <form class="box m-6" action="" method="post">
+    <form class="box has-background-grey-lighter m-6" action="" method="post">
         {% csrf_token %}
 
         <p class="title m-2">Cadastrar Ativo</p>
@@ -68,9 +68,17 @@
                 </div>
             </div>
         </div>
-        <input type="submit" value="Submit" class="button is-success">
-        </button>
 
+        <div class="field is-grouped">
+            <p class="control">
+                <input type="submit" class="button is-primary" value="Cadastrar">
+            </p>
+            <p class="control">
+                <a class="button is-light" href="{% url 'view_list' %}">Cancelar</a>
+            </p>
+        </div>
+
+        
     </form>
 </div>
 
