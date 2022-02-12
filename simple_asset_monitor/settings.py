@@ -128,7 +128,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # API Secrets
 from decouple import config
-API_KEY = config('API_KEY')
+API_KEYS = config('API_KEYS').split(',')
 
 import platform
 import asyncio

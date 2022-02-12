@@ -1,7 +1,5 @@
-from locale import currency
-from wsgiref import headers
 from interface.models import AssetMonitoring
-from simple_asset_monitor.settings import API_KEY
+from simple_asset_monitor.settings import API_KEYS
 from .models import Asset, AssetPrice
 
 import aiohttp
@@ -13,6 +11,7 @@ from parsel import Selector
 class API:
     def __init__(self):
         self.thread_size = 30
+        self.api_key_index = 0
         self.obtained_assets = dict()
         self.headers = {
             'Host': 'api.hgbrasil.com',
@@ -24,7 +23,7 @@ class API:
         self.initialize_data()
 
     def initialize_data(self):
-        if API_KEY is None:
+        if not API_KEYS:
             raise Exception("API KEY não cadastrada")
         print(f'{datetime.datetime.now()} - Procurando novas ações...')
         # Get codes on DB
@@ -58,20 +57,30 @@ class API:
 
     async def get_asset_info(self, code):
         url = 'https://api.hgbrasil.com/finance/stock_price'
-        params = {
-            'key': API_KEY,
-            'symbol': code,
-        }
         
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, params=params, headers=self.headers) as response:
-                    response.raise_for_status()
-                    json = await response.json()
-                    asset = json['results'][code]
-                    self.obtained_assets[code] = asset
-        except Exception as e:
-            print(f'Erro ao buscar dados da ação {code}: {e}')
+        try_again = True
+        while try_again:
+            try_again = False
+            params = {
+                'key': API_KEYS[self.api_key_index],
+                'symbol': code,
+            }
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(url, params=params, headers=self.headers) as response:
+                        response.raise_for_status()
+                        json = await response.json()
+                        asset = json['results'][code]
+                        self.obtained_assets[code] = asset
+            except aiohttp.ClientResponseError:
+                if self.api_key_index < len(API_KEYS):
+                    if params['key'] == API_KEYS[self.api_key_index]:
+                        self.api_key_index += 1
+                    try_again = True
+                else:
+                    print(f'Todas API KEYS estão bloqueadas')
+            except Exception as e:
+                print(f'Erro ao buscar dados da ação {code}: {e}')
 
     def save_new_assets(self):
         for code in self.obtained_assets:
