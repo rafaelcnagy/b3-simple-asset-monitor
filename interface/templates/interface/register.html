@@ -10,13 +10,20 @@
         <p class="title m-2">Cadastrar Ativo</p>
 
         {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li
-                {% if 'error' in message.tags %} class="notification is-danger my-4"{% endif %}>
-                {{ message }}</li>
-            {% endfor %}
-        </ul>
+            <ul id="messages">
+                {% for message in messages %}
+                <div class="my-4 notification {% if message.tags == 'error' %}is-danger{% elif message.tags == 'success' %}is-success{% endif %}">
+                    <button class="delete is-medium" onclick="close_notification()"></button>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </ul>
+            <script>
+                function close_notification() {
+                    var notification = document.getElementById('messages');
+                    notification.style.display = "none";
+                }
+            </script>
         {% endif %}
     
         <div class="field is-horizontal">

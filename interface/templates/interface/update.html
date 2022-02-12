@@ -9,15 +9,22 @@
             <form class="column is-flex is-flex-direction-column is-justify-content-space-between" action="" method="post">
                 {% csrf_token %}
                 <p class="title m-2">Editar Ativo</p>
-
+                
                 {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                    <li
-                        {% if 'error' in message.tags %} class="notification is-danger my-4"{% endif %}>
-                        {{ message }}</li>
-                    {% endfor %}
-                </ul>
+                    <ul id="messages">
+                        {% for message in messages %}
+                        <div class="my-4 notification {% if message.tags == 'error' %}is-danger{% elif message.tags == 'success' %}is-success{% endif %}">
+                            <button class="delete is-medium" onclick="close_notification()"></button>
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </ul>
+                    <script>
+                        function close_notification() {
+                            var notification = document.getElementById('messages');
+                            notification.style.display = "none";
+                        }
+                    </script>
                 {% endif %}
             
                 <div class="field is-horizontal">
@@ -76,6 +83,9 @@
                 <div class="field is-grouped">
                     <p class="control">
                         <input type="submit" class="button is-primary" value="Salvar Limites">
+                    </p>
+                    <p class="control">
+                        <a class="button is-danger" href="{% url 'delete' asset.id %}">Deletar ativo</a>
                     </p>
                     <p class="control">
                         <a class="button is-light" href="{% url 'view_list' %}">Cancelar</a>
