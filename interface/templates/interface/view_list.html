@@ -18,8 +18,8 @@
     <div class="assets-list">
     {% for asset in assets %}
         <div class="box m-3 p-5">
-            <div class="columns content">
-                <div class="column is-half">
+            <div class="columns content is-vcentered">
+                <div class="column is-4">
                     <div class="columns">
                         <div class="column">
                             <h2>{{asset.asset.code}}</h2>
@@ -33,10 +33,15 @@
                     {% endif %}
                 </div>
                 
-                <div class="column">
-                    <h3>Valor atual:<br>R$ {{asset.prices.0.price}}</h2>
+                <div class="column is-1">
+                    <h3>Valor atual:<br>R$ {{asset.prices.0.price}}</h3>
                 </div>
+
                 <div class="column">
+                    <canvas id="chart{{asset.id}}"></canvas>
+                </div>
+
+                <div class="column is-2">
                     {% if asset.upper_limit %}
                         <p>Limite superior: R$ {{asset.upper_limit|floatformat:2|intcomma}}</p>
                     {% endif %}
@@ -60,5 +65,50 @@
         <a href="{% url 'register' %}"> Registrar Novo </a>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+function create_axis(id, label, dates, prices) {       
+    var ctx = document.getElementById("chart"+id).getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dates.reverse(),
+            datasets: [{
+                label: label,
+                data: prices.reverse(),
+                backgroundColor: ['rgba(255, 99, 132, 0.2)'],
+                borderColor: ['rgba(255, 99, 132, 1)'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+        }
+    });
+}
+</script>
+<script>
+{% load l10n %}
+
+{% for asset in assets %}
+    var dates = [
+        {% for price in asset.prices %}
+            "{{price.created_at}}", 
+        {% endfor %}
+    ];
+    var prices = [
+        {% for price in asset.prices %}
+            {{ price.price|unlocalize }},
+        {% endfor %}
+    ];
+   
+    create_axis({{asset.id}}, "{{asset.asset.code}}", dates, prices);
+{% endfor %}
+
+</script>
+
+
 
 {% endblock content %}

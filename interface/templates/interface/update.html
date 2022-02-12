@@ -4,78 +4,128 @@
 
 {% block content %}
 <div class="container is-fluid">
-    <form class="box m-6" action="" method="post">
-        {% csrf_token %}
+    <div class="box has-background-grey-lighter m-6">
+        <div class="columns">
+            <form class="column is-flex is-flex-direction-column is-justify-content-space-between" action="" method="post">
+                {% csrf_token %}
+                <p class="title m-2">Editar Ativo</p>
 
-        <p class="title m-2">Editar Ativo</p>
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li
+                        {% if 'error' in message.tags %} class="notification is-danger my-4"{% endif %}>
+                        {{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">Código:</label>
+                    </div>
+                    <div class="field-body">
+                        <h2 class="title is-3">{{ asset.asset.code }}</h2>
+                    </div>
+                </div>
 
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li
-                {% if 'error' in message.tags %} class="notification is-danger my-4"{% endif %}>
-                {{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-    
-        <div class="field is-horizontal">
-            <div class="field-label is-normal">
-                <label class="label">Código:</label>
-            </div>
-            <div class="field-body">
-                <h2 class="title is-3">{{ asset.asset.code }}</h2>
-            </div>
-        </div>
-
-        <div class="field is-horizontal">
-            <div class="field-label is-normal">
-                <label class="label">Valor atual:</label>
-            </div>
-            <div class="field-body">
-                <h2 class="title is-3">{{ asset.prices.0.price }}</h2>
-            </div>
-        </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">Valor atual:</label>
+                    </div>
+                    <div class="field-body">
+                        <h2 class="title is-3">{{ asset.prices.0.price }}</h2>
+                    </div>
+                </div>
 
 
-        <div class="field is-horizontal">
-            <div class="field-label is-normal">
-                <label class="label">Limite superior:</label>
-            </div>
-            <div class="field-body">
-                <div class="field">
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">Limite superior:</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <p class="control">
+                                {% if asset.upper_limit %}
+                                    <input class="input" type="text" name="upper_limit" value="{{ asset.upper_limit }}">
+                                {% else %}
+                                    <input class="input" type="text" name="upper_limit">
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label class="label">Limite inferior:</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <p class="control">
+                                {% if asset.lower_limit %}
+                                    <input class="input" type="text" name="lower_limit" value="{{ asset.lower_limit }}">
+                                {% else %}
+                                    <input class="input" type="text" name="lower_limit">
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field is-grouped">
                     <p class="control">
-                        {% if asset.upper_limit %}
-                            <input class="input" type="text" name="upper_limit" value="{{ asset.upper_limit }}">
-                        {% else %}
-                            <input class="input" type="text" name="upper_limit">
-                        {% endif %}
+                        <input type="submit" class="button is-primary" value="Salvar Limites">
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" href="{% url 'view_list' %}">Cancelar</a>
                     </p>
                 </div>
+            </form>
+            <div class="column is-half">
+                <canvas id="chart"></canvas>
             </div>
         </div>
-
-        <div class="field is-horizontal">
-            <div class="field-label is-normal">
-                <label class="label">Limite inferior:</label>
-            </div>
-            <div class="field-body">
-                <div class="field">
-                    <p class="control">
-                        {% if asset.lower_limit %}
-                            <input class="input" type="text" name="lower_limit" value="{{ asset.lower_limit }}">
-                        {% else %}
-                            <input class="input" type="text" name="lower_limit">
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <input type="submit" value="Submit" class="button is-success">
-        </button>
-
-    </form>
+    </div>
 </div>
+
+
+<script>
+    function create_axis(label, dates, prices) {       
+        var ctx = document.getElementById("chart").getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates.reverse(),
+                datasets: [{
+                    label: label,
+                    data: prices.reverse(),
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)'],
+                    borderColor: ['rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+            }
+        });
+    }
+    </script>
+    <script>
+    {% load l10n %}
+    
+    var dates = [
+        {% for price in asset.prices %}
+            "{{price.created_at}}", 
+        {% endfor %}
+    ];
+    var prices = [
+        {% for price in asset.prices %}
+            {{ price.price|unlocalize }},
+        {% endfor %}
+    ];
+    
+    create_axis("{{asset.asset.code}}", dates, prices);
+    
+    </script>
 
 {% endblock content %}
