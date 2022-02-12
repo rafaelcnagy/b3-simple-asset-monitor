@@ -44,7 +44,7 @@ class API:
             self.save_new_assets()
 
     async def call_multiple_requests(self, codes):
-        coros = [self.get_new_asset(code) for code in codes]
+        coros = [self.get_asset_info(code) for code in codes]
         await asyncio.gather(*coros)
             
     async def get_asset_codes(self):
@@ -56,7 +56,7 @@ class API:
                 codes = sel.xpath('//div[@class="card"]//ul//li/code[@class="highlighter-rouge"]/text()').extract()
                 self.all_asset_codes = codes
 
-    async def get_new_asset(self, code):
+    async def get_asset_info(self, code):
         url = 'https://api.hgbrasil.com/finance/stock_price'
         params = {
             'key': API_KEY,
@@ -90,12 +90,13 @@ class API:
                     market_time_timezone = int(asset['market_time']['timezone']),
                     market_cap = asset['market_cap'] if 'market_cap' in asset else None,
                 )
-                AssetPrice.objects.create(
-                    asset = asset_obj,
-                    price = float(asset['price']),
-                    currency = asset['currency'],
-                    change_percent = asset['currency'],
-                )
+                if 'price' in asset:
+                    AssetPrice.objects.create(
+                        asset = asset_obj,
+                        price = float(asset['price']),
+                        currency = asset['currency'],
+                        change_percent = asset['change_percent'],
+                    )
                 print(f'Ação criada: "{code}"')
             except Exception as e:
                 raise Exception(f'Erro ao salvar ação {code}: {e}')
@@ -108,7 +109,6 @@ class API:
         self.update_assets(assets_codes)
         print(f'{datetime.datetime.now()} - Atualização encerrada.')
 
-
     def update_assets(self, assets_codes):
         for index in range(0, len(assets_codes), self.thread_size):
             self.updated_assets = dict()
@@ -119,7 +119,7 @@ class API:
         for code in self.obtained_assets:
             asset = self.obtained_assets[code]
             try:
-                asset_obj = Asset.objects.get(code = code)
+                asset_obj = Asset.objects.get(code=code)
                 AssetPrice.objects.create(
                     asset = asset_obj,
                     price = float(asset['price']),
