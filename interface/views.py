@@ -64,6 +64,13 @@ def register(request):
     else:
         form = AssetMonitoringForm()
 
-    return render(request, 'interface/register.html', {'form': form})
-
-    
+    prices = AssetPrice.objects.raw(
+        '''SELECT *
+        FROM (
+            SELECT p.id, p.asset_id, p.price, p.created_at
+            FROM monitoring_asset a
+            INNER JOIN monitoring_assetprice p ON p.asset_id=a.id
+            ORDER BY p.created_at DESC
+        ) AS sub
+        GROUP BY asset_id''')
+    return render(request, 'interface/register.html', {'form': form, 'prices': prices})

@@ -25,14 +25,23 @@
             </div>
             <div class="field-body">
                 <div class="select" name="code">
-                    <select id="id_code" name="code">
+                    <select id="id_code" name="code" onchange="show_price()">
                     {% for id, name in form.fields.code.choices %}
                         <option value="{{ id }}">{{ name }}</option>
                     {% endfor %}
                     </select>
                 </div>
             </div>
-        </div>          
+        </div>
+
+        <div class="field is-horizontal">
+            <div class="field-label is-normal">
+                <label class="label">Valor atual:</label>
+            </div>
+            <div class="field-body">
+                <h2 id="price" class="title is-3"></h2>
+            </div>
+        </div>
 
         <div class="field is-horizontal">
             <div class="field-label is-normal">
@@ -64,5 +73,25 @@
 
     </form>
 </div>
+
+<script>
+    function show_price() {
+        var prices = {
+            {% for price in prices %}
+                '{{ price.asset.id }}': '{{ price.price }}',
+            {% endfor %}
+        };
+        id = document.getElementById("id_code").value;
+        if (prices.hasOwnProperty(id)) {
+            value = parseFloat(prices[id].replace(',', '.')).toFixed(2).replace('.', ',');
+            document.getElementById("price").textContent = "R$ " + value;
+        } else {
+            document.getElementById("price").textContent = "Desconhecido";
+        } 
+    }
+
+    window.onload = show_price()
+</script>
+
 
 {% endblock content %}
