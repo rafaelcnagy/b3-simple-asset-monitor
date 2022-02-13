@@ -11,8 +11,8 @@ def view_list(request):
     assets = AssetMonitoring.objects.filter(user=user).order_by('-created_at')
     assets_prices = AssetPrice.objects.filter(asset__in=[asset_monitoring.asset for asset_monitoring in assets]).order_by('-created_at')
     for asset in assets:
-        asset.prices = [asset_price for asset_price in assets_prices if asset_price.asset == asset.asset]
-
+        asset.prices = [asset_price for asset_price in assets_prices if asset_price.asset == asset.asset][:20]
+    
     return render(request, 'interface/view_list.html', {'assets': assets})
 
 @login_required
