@@ -130,6 +130,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 from decouple import config
 API_KEYS = config('API_KEYS').split(',')
 
+# Redirect urls
+LOGOUT_REDIRECT_URL = '/'
+
 import platform
 import asyncio
 if platform.system()=='Windows':
