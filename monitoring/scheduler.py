@@ -9,4 +9,10 @@ def start():
         'interval',
         minutes=60,
     )
+    scheduler.add_job(
+        api.update_all_data,
+        'cron',
+        hour=6,
+        minute=0,
+    )
     scheduler.start()

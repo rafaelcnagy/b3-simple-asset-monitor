@@ -73,12 +73,12 @@ class API:
                         asset = json['results'][code]
                         self.obtained_assets[code] = asset
             except aiohttp.ClientResponseError:
-                if self.api_key_index < len(API_KEYS):
-                    if params['key'] == API_KEYS[self.api_key_index]:
-                        self.api_key_index += 1
-                    try_again = True
-                else:
+                if params['key'] == API_KEYS[self.api_key_index]:
+                    self.api_key_index += 1
+                if self.api_key_index >= len(API_KEYS):
                     print(f'Todas API KEYS estão bloqueadas')
+                else:
+                    try_again = True
             except Exception as e:
                 print(f'Erro ao buscar dados da ação {code}: {e}')
 
@@ -113,7 +113,7 @@ class API:
     def update_data(self):
         print(f'{datetime.datetime.now()} - Atualizando valores das ações...')
         assets_monitoring = AssetMonitoring.objects.all()
-        assets_id_list = assets_monitoring.values_list('asset').distinct()[:4]
+        assets_id_list = assets_monitoring.values_list('asset').distinct()
         assets_codes = [item.code for item in Asset.objects.filter(id__in=assets_id_list)]
         self.update_assets(assets_codes)
         print(f'{datetime.datetime.now()} - Atualização encerrada.')
@@ -127,14 +127,24 @@ class API:
     def save_updated_assets(self):
         for code in self.obtained_assets:
             asset = self.obtained_assets[code]
-            try:
-                asset_obj = Asset.objects.get(code=code)
-                AssetPrice.objects.create(
-                    asset = asset_obj,
-                    price = float(asset['price']),
-                    currency = asset['currency'],
-                    change_percent = asset['change_percent'],
-                )
-                print(f'Preço da ação atualizado: "{code}"')
-            except Exception as e:
-                raise Exception(f'Erro ao salvar ação {code}: {e}')
+            if 'price' in asset:
+                try:
+                    asset_obj = Asset.objects.get(code=code)
+                    AssetPrice.objects.create(
+                        asset = asset_obj,
+                        price = float(asset['price']),
+                        currency = asset['currency'],
+                        change_percent = asset['change_percent'],
+                    )
+                    print(f'Preço da ação atualizado: "{code}"')
+                except Exception as e:
+                    raise Exception(f'Erro ao salvar ação {code}: {e}')
+            else:
+                print(f'Não consta preço para a ação: "{code}"')
+
+    def update_all_data(self):
+        print(f'{datetime.datetime.now()} - Atualizando todos os valores das ações...')
+        assets = Asset.objects.all()
+        assets_codes = [item.code for item in assets][:50]
+        self.update_assets(assets_codes)
+        print(f'{datetime.datetime.now()} - Atualização encerrada.')
