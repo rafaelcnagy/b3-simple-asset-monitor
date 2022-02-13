@@ -4,8 +4,12 @@
 
 {% block content %}
 <div> 
-
-    <h1 class="title is-2 p-4">Lista de ativos cadastrados</h1>
+    <div class="is-flex is-justify-content-space-between">
+        <h1 class="title is-2 p-4">Lista de ativos cadastrados</h1>
+        <div class="px-3 pt-3 pb-6">
+            <a class="button is-success is-large is-pulled-right" href="{% url 'register' %}">Cadastrar novo ativo</a>
+        </div>
+    </div>
 
     {% if messages %}
         <ul id="messages">
@@ -65,12 +69,7 @@
             </a>
         </div>
     {% endfor %}
-    </div>
-
-    <div class="px-6 pt-3 pb-6">
-        <a class="button is-success is-large is-pulled-right" href="{% url 'register' %}">Cadastrar novo ativo</a>
-    </div>
-    
+    </div>   
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
