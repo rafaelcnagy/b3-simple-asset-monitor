@@ -7,6 +7,6 @@ def start():
     scheduler.add_job(
         api.update_data,
         'interval',
-        minutes=30,
+        minutes=60,
     )
     scheduler.start()
