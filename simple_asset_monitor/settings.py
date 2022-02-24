@@ -130,6 +130,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 from decouple import config
 API_KEYS = config('API_KEYS').split(',')
 
+# E-mail Secrets
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
 # Redirect urls
 LOGOUT_REDIRECT_URL = '/'
 
