@@ -1,6 +1,7 @@
 from interface.models import AssetMonitoring
 from simple_asset_monitor.settings import API_KEYS
 from .models import Asset, AssetPrice
+from .mails import mail_trigger
 
 import aiohttp
 import asyncio
@@ -74,9 +75,10 @@ class API:
                         self.obtained_assets[code] = asset
             except aiohttp.ClientResponseError:
                 if params['key'] == API_KEYS[self.api_key_index]:
-                    self.api_key_index += 1
-                if self.api_key_index >= len(API_KEYS):
-                    print(f'Todas API KEYS estão bloqueadas')
+                    if self.api_key_index < len(API_KEYS)-1:
+                        self.api_key_index += 1
+                    else:
+                        print(f'Todas API KEYS estão bloqueadas')
                 else:
                     try_again = True
             except Exception as e:
@@ -139,6 +141,7 @@ class API:
                     print(f'Preço da ação atualizado: "{code}"')
                 except Exception as e:
                     raise Exception(f'Erro ao salvar ação {code}: {e}')
+                mail_trigger(asset_obj)
             else:
                 print(f'Não consta preço para a ação: "{code}"')
 
