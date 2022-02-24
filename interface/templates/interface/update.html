@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load humanize %}
 {% block title %}Editar Ativo{% endblock %}
 
 {% block content %}
@@ -41,7 +41,7 @@
                         <label class="label">Valor atual:</label>
                     </div>
                     <div class="field-body">
-                        <h2 class="title is-3">{{ asset.prices.0.price }}</h2>
+                        <h2 class="title is-3">{{ asset.prices.0.price|floatformat:2|intcomma }}</h2>
                     </div>
                 </div>
 
@@ -54,7 +54,7 @@
                         <div class="field">
                             <p class="control">
                                 {% if asset.upper_limit %}
-                                    <input class="input" type="text" name="upper_limit" value="{{ asset.upper_limit }}">
+                                    <input class="input" type="text" name="upper_limit" value="{{ asset.upper_limit|floatformat:2|intcomma }}">
                                 {% else %}
                                     <input class="input" type="text" name="upper_limit">
                                 {% endif %}
@@ -71,7 +71,7 @@
                         <div class="field">
                             <p class="control">
                                 {% if asset.lower_limit %}
-                                    <input class="input" type="text" name="lower_limit" value="{{ asset.lower_limit }}">
+                                    <input class="input" type="text" name="lower_limit" value="{{ asset.lower_limit|floatformat:2|intcomma }}">
                                 {% else %}
                                     <input class="input" type="text" name="lower_limit">
                                 {% endif %}

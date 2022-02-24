@@ -18,6 +18,7 @@ def view_list(request):
 @login_required
 def update(request, id):
     def check_interval(upper_limit, lower_limit, price):
+        price = float(upper_limit.replace(',', '.'))
         if upper_limit is not None and upper_limit != '':
             asset_monitoring.upper_limit = float(upper_limit.replace(',', '.'))
             if asset_monitoring.upper_limit < price or asset_monitoring.upper_limit <= 0:
