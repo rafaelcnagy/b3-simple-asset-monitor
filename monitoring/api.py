@@ -148,6 +148,6 @@ class API:
     def update_all_data(self):
         print(f'{datetime.datetime.now()} - Atualizando todos os valores das ações...')
         assets = Asset.objects.all()
-        assets_codes = [item.code for item in assets][:50]
+        assets_codes = [item.code for item in assets]
         self.update_assets(assets_codes)
         print(f'{datetime.datetime.now()} - Atualização encerrada.')
