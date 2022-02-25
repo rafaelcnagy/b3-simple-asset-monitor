@@ -54,5 +54,5 @@ Por padrão, o servidor vai ser executado no localhost, usando a porta 8000.
 
 Execute o comando no terminal:
 ```
-poetry run python manage.py runserver
+poetry run python manage.py runserver --noreload
 ```
