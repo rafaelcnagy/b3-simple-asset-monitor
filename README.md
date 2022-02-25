@@ -38,6 +38,11 @@ poetry run python manage.py makemigrations
 poetry run python manage.py migrate
 ```
 
+Crie um super usuário
+```
+poetry run python manage.py createsuperuser
+```
+
 Finalmente, devemos baixar os arquivos estáticos:
 ```
 poetry run python manage.py collectstatic
