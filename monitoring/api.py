@@ -21,7 +21,10 @@ class API:
             'Alt-Used': 'api.hgbrasil.com',
             'Connection': 'keep-alive',
         }
+
+        # Ao iniciar a aplicação, procuramos por novas ações e atualizamos os preços das ações monitoradas
         self.initialize_data()
+        self.update_data()
 
     def initialize_data(self):
         if not API_KEYS:
