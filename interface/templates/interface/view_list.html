@@ -15,7 +15,7 @@
         <ul id="messages">
             {% for message in messages %}
             <div class="my-4 notification {% if message.tags == 'error' %}is-danger{% elif message.tags == 'success' %}is-success{% endif %}">
-                <button class="delete is-medium" onclick="close_notification()"></button>
+                <div class="delete is-medium" onclick="close_notification()"></div>
                 {{ message }}
             </div>
             {% endfor %}
