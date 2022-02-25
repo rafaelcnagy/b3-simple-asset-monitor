@@ -116,7 +116,7 @@ class API:
                 raise Exception(f'Erro ao salvar ação {code}: {e}')
 
     def update_data(self):
-        print(f'{datetime.datetime.now()} - Atualizando valores das ações...')
+        print(f'{datetime.datetime.now()} - Atualizando valores das ações monitoradas...')
         assets_monitoring = AssetMonitoring.objects.all()
         assets_id_list = assets_monitoring.values_list('asset').distinct()
         assets_codes = [item.code for item in Asset.objects.filter(id__in=assets_id_list)]
@@ -149,7 +149,7 @@ class API:
                 print(f'Não consta preço para a ação: "{code}"')
 
     def update_all_data(self):
-        print(f'{datetime.datetime.now()} - Atualizando todos os valores das ações...')
+        print(f'{datetime.datetime.now()} - Atualizando valores de todas as ações...')
         assets = Asset.objects.all()
         assets_codes = [item.code for item in assets]
         self.update_assets(assets_codes)
