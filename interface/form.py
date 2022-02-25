@@ -15,7 +15,9 @@ class AssetMonitoringForm (forms.ModelForm):
         super(AssetMonitoringForm, self).__init__(*args, **kwargs)
         self.fields['code'].choices = [(asset.id, asset.code) for asset in Asset.objects.all()]
         self.fields['lower_limit'].required = False
+        self.fields['lower_limit'].localize = True
         self.fields['upper_limit'].required = False
+        self.fields['upper_limit'].localize = True
 
     def clean(self):
         super(AssetMonitoringForm, self).clean()
@@ -25,9 +27,9 @@ class AssetMonitoringForm (forms.ModelForm):
 
         if len(asset_monitoring) > 0:
             raise ValidationError(f'Você já tem esse ativo cadastrado.')
-        if self.data['upper_limit'] and float(self.data['upper_limit'].replace(',', '.')) <= price_obj.price:
+        if self.data['upper_limit'] and price_obj and float(self.data['upper_limit'].replace(',', '.')) <= price_obj.price:
             raise ValidationError(f'O limite superior não pode ser menor que o valor atual do ativo.')
-        if self.data['lower_limit'] and float(self.data['lower_limit'].replace(',', '.')) >= price_obj.price:
+        if self.data['lower_limit'] and price_obj and float(self.data['lower_limit'].replace(',', '.')) >= price_obj.price:
             raise ValidationError(f'Os limite inferior não pode ser maior que o valor atual do ativo.')
 
     def save(self):

@@ -17,19 +17,19 @@ def view_list(request):
 
 @login_required
 def update(request, id):
-    def check_interval(upper_limit, lower_limit, price):
-        price = float(upper_limit.replace(',', '.'))
+    def check_interval(upper_limit, lower_limit):
+        price = asset_monitoring.prices[0].price
         if upper_limit is not None and upper_limit != '':
-            asset_monitoring.upper_limit = float(upper_limit.replace(',', '.'))
             if asset_monitoring.upper_limit < price or asset_monitoring.upper_limit <= 0:
                 return False
+            asset_monitoring.upper_limit = float(upper_limit.replace(',', '.'))
         else:
             asset_monitoring.upper_limit = None
 
         if lower_limit is not None and lower_limit != '':
-            asset_monitoring.lower_limit = float(lower_limit.replace(',', '.'))
             if asset_monitoring.lower_limit > price or asset_monitoring.lower_limit <= 0:
                 return False
+            asset_monitoring.lower_limit = float(lower_limit.replace(',', '.'))
         else:
             asset_monitoring.lower_limit = None
         
@@ -45,7 +45,7 @@ def update(request, id):
     if request.method == 'POST':
         upper_limit = request.POST.get('upper_limit', None)
         lower_limit = request.POST.get('lower_limit', None)
-        if check_interval(upper_limit, lower_limit, asset_monitoring.prices[0].price):
+        if check_interval(upper_limit, lower_limit):
             asset_monitoring.save()
             messages.success(request, 'Ativo atualizado com sucesso')
             return redirect('view_list')
