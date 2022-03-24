@@ -1,5 +1,5 @@
 # b3-simple-asset-monitor
-A django project made as a technical test for Inoa Sistemas
+A b3 asset monitor, made in django as a study project
 
 
 # Descrição do desafio
